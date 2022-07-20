@@ -1,18 +1,10 @@
-# app.py
-
-from flask import Flask, request
-from flask_restx import Api, Resource
-from flask_sqlalchemy import SQLAlchemy
-from marshmallow import Schema, fields
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+from application.app import db
 
 
 class Movie(db.Model):
+    #Создаем модель Movie, для описания данных в таблице movie
     __tablename__ = 'movie'
+
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255))
     description = db.Column(db.String(255))
@@ -20,22 +12,23 @@ class Movie(db.Model):
     year = db.Column(db.Integer)
     rating = db.Column(db.Float)
     genre_id = db.Column(db.Integer, db.ForeignKey("genre.id"))
-    genre = db.relationship("Genre")
     director_id = db.Column(db.Integer, db.ForeignKey("director.id"))
-    director = db.relationship("Director")
+
+    director = db.relationship("Director") #таблица movie ссылается на таблицу director
+    genre = db.relationship("Genre") #таблица movie ссылается на таблицу genre
+
 
 class Director(db.Model):
+    #Создаем модель Director, для описания данных в таблице director
     __tablename__ = 'director'
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))
 
 
 class Genre(db.Model):
+    #Создаем модель Genre, для описания данных в таблице genre
     __tablename__ = 'genre'
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))
-
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
